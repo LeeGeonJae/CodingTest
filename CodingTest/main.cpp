@@ -1,21 +1,23 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
-string solution(string phone_number) {
-    string answer = phone_number;
+int solution(vector<int> numbers) {
+    int answer = 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9;
 
-    for (string::iterator beginiter = answer.begin(); beginiter != answer.end() - 4; beginiter++)
-        *beginiter = '*';
+    for (int i = 0; i < numbers.size(); i++)
+    {
+        answer -= numbers[i];
+    }
 
     return answer;
 }
 
 int main()
 {
-    cout << solution("01052346405");
 
     return 0;
 }
