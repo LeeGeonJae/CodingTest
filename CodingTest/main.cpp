@@ -1,28 +1,19 @@
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 using namespace std;
 
-vector<vector<int>> solution(vector<vector<int>> arr1, vector<vector<int>> arr2)
+int solution(vector<vector<string>> clothes)
 {
-    vector<vector<int>> answer;
-    int col = arr1.size();
-    int row = arr2[0].size();
-    int size = arr2.size();
-    for (int i = 0; i < col; i++)
-    {
-        vector<int> number(row);
-        for (int j = 0; j < row; j++)
-        {
-            int num = 0;
-            for (int k = 0; k < size; k++)
-                num += arr1[i][k] * arr2[k][j];
+    unordered_map<string, int> region;
 
-            number[j] = num;
-        }
-        answer.push_back(number);
-    }
+    for (auto& c : clothes)
+        region[c[1]] = region[c[1]] ? region[c[1]] + 1 : 1;
 
+    int number = 1;
+    for (auto& cloth : region)
+        number *= (cloth.second + 1);
 
-    return answer;
+    return number - 1;
 }
