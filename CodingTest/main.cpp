@@ -3,16 +3,16 @@
 
 using namespace std;
 
-int solution(int number, int limit, int power)
-{
-    int answer = 0;
-    for (int i = 1; i <= number; i++)
-    {
-        int attack = 0;
-        for (int j = 1; j * j <= i; j++)
-            attack += i % j ? 0 : j * j == i ? 1 : 2;
+const int WeekNumber = 7;
+const int MonthNumber = 12;
 
-        answer += attack > limit ? power : attack;
-    }
-    return answer;
+string Week[WeekNumber] = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
+int Days[MonthNumber] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+string solution(int a, int b)
+{
+    int number = 4 + b;
+    for (int i = 0; i < a - 1; i++)
+        number += Days[i];
+    return Week[number % WeekNumber];
 }
