@@ -1,19 +1,19 @@
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <algorithm>
 
 using namespace std;
 
-int solution(vector<vector<string>> clothes)
+int solution(vector<int> citations)
 {
-    unordered_map<string, int> region;
-
-    for (auto& c : clothes)
-        region[c[1]] = region[c[1]] ? region[c[1]] + 1 : 1;
-
-    int number = 1;
-    for (auto& cloth : region)
-        number *= (cloth.second + 1);
-
-    return number - 1;
+    sort(citations.rbegin(), citations.rend());
+    int h = 0;
+    for (int i = 0; i < citations.size(); ++i)
+    {
+        if (citations[i] >= i + 1)
+            h = i + 1;
+        else
+            break;
+    }
+    return h;
 }
