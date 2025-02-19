@@ -1,59 +1,30 @@
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <unordered_map>
 
 using namespace std;
 
-bool checkCityName(const string& lhs, const string& rhs)
+vector<int> solution(vector<int> progresses, vector<int> speeds)
 {
-    if (lhs.size() != rhs.size())
-        return false;
+    vector<int> answer;
 
-    for (int i = 0; i < lhs.size(); i++)
+    for (int i = 0; i < progresses.size(); i++)
     {
-        if (!(lhs[i] == rhs[i]
-            || lhs[i] - 'A' + 'a' == rhs[i]
-            || rhs[i] - 'A' + 'a' == lhs[i]))
-            return false;
-    }
+        int number = 1;
+        int updateDay = (99 - progresses[i]) / speeds[i] + 1;
 
-    return true;
-}
-
-int solution(int cacheSize, vector<string> cities)
-{
-    vector<int> cacheLife(cacheSize, 100000);
-    vector<string> cache(cacheSize);
-    int currentTime = cities.size();
-
-    for (string& city : cities)
-    {
-        bool isCheck = false;
-
-        // 비교
-        for (int i = 0; i < cache.size(); i++)
+        for (int j = i + 1; j < progresses.size(); j++)
         {
-            if (cacheSize && checkCityName(city, cache[i]))
-            {
-                cacheLife[i] = -1;
-                isCheck = true;
+            int nextCompleteDay = (99 - progresses[j]) / speeds[j] + 1;
+            if (updateDay < nextCompleteDay)
                 break;
-            }
+
+            i = j;
+            number++;
         }
 
-        // 캐시 갱신
-        if (!isCheck && !cacheLife.empty())
-        {
-            int index = max_element(cacheLife.begin(), cacheLife.end()) - cacheLife.begin();
-            cache[index] = city;
-            cacheLife[index] = -1;
-        }
-
-        for (int i = 0; i < cacheLife.size(); i++)
-            cacheLife[i]++;
-
-        currentTime += isCheck ? 0 : 4;
+        answer.push_back(number);
     }
 
-    return currentTime;
+    return answer;
 }
