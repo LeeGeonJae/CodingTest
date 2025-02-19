@@ -1,19 +1,18 @@
 #include <string>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
-int solution(vector<int> citations)
+int solution(int number, int limit, int power)
 {
-    sort(citations.rbegin(), citations.rend());
-    int h = 0;
-    for (int i = 0; i < citations.size(); ++i)
+    int answer = 0;
+    for (int i = 1; i <= number; i++)
     {
-        if (citations[i] >= i + 1)
-            h = i + 1;
-        else
-            break;
+        int attack = 0;
+        for (int j = 1; j * j <= i; j++)
+            attack += i % j ? 0 : j * j == i ? 1 : 2;
+
+        answer += attack > limit ? power : attack;
     }
-    return h;
+    return answer;
 }
