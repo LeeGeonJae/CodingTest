@@ -1,32 +1,37 @@
-#include <iostream>
+#include <string>
 #include <vector>
+#include <algorithm>
+
 using namespace std;
 
-void backtracking(vector<int>& state, int depth, int maxDepth) 
+void backTracking(const vector<vector<int>>& dungeons, vector<int>& state, vector<bool>& check, int& answer, int& stemina)
 {
-    if (depth == maxDepth)
-    {
-        for (auto& n : state)
-            cout << n;
-        cout << endl;
-        return;
-    }
+    answer = answer < state.size() ? state.size() : answer;
 
-    for (int i = 1; i <= maxDepth; i++)
+    int currentStemina = stemina;
+    for (int& n : state)
+        currentStemina -= n;
+
+    for (int i = 0; i < dungeons.size(); i++)
     {
-        if (find(state.begin(), state.end(), i) == state.end())
+        if (!check[i] && dungeons[i][0] <= currentStemina)
         {
-            state.push_back(i);
-            backtracking(state, depth + 1, maxDepth);
+            check[i] = true;
+            state.push_back(dungeons[i][1]);
+            backTracking(dungeons, state, check, answer, stemina);
             state.pop_back();
+            check[i] = false;
         }
     }
 }
 
-int main() 
+int solution(int k, vector<vector<int>> dungeons)
 {
-    int n = 3;  // 예제: 1부터 n까지 숫자로 만든 모든 순열 찾기
+    int answer = 0;
     vector<int> state;
-    backtracking(state, 0, n);
-    return 0;
+    vector<bool> check(dungeons.size());
+
+    backTracking(dungeons, state, check, answer, k);
+
+    return answer;
 }
