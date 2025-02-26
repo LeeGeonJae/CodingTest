@@ -1,30 +1,32 @@
-#include <string>
+#include <iostream>
 #include <vector>
-#include <unordered_map>
-
 using namespace std;
 
-vector<int> solution(vector<int> progresses, vector<int> speeds)
+void backtracking(vector<int>& state, int depth, int maxDepth) 
 {
-    vector<int> answer;
-
-    for (int i = 0; i < progresses.size(); i++)
+    if (depth == maxDepth)
     {
-        int number = 1;
-        int updateDay = (99 - progresses[i]) / speeds[i] + 1;
-
-        for (int j = i + 1; j < progresses.size(); j++)
-        {
-            int nextCompleteDay = (99 - progresses[j]) / speeds[j] + 1;
-            if (updateDay < nextCompleteDay)
-                break;
-
-            i = j;
-            number++;
-        }
-
-        answer.push_back(number);
+        for (auto& n : state)
+            cout << n;
+        cout << endl;
+        return;
     }
 
-    return answer;
+    for (int i = 1; i <= maxDepth; i++)
+    {
+        if (find(state.begin(), state.end(), i) == state.end())
+        {
+            state.push_back(i);
+            backtracking(state, depth + 1, maxDepth);
+            state.pop_back();
+        }
+    }
+}
+
+int main() 
+{
+    int n = 3;  // 예제: 1부터 n까지 숫자로 만든 모든 순열 찾기
+    vector<int> state;
+    backtracking(state, 0, n);
+    return 0;
 }
