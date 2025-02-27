@@ -1,23 +1,39 @@
+#include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
-int solution(int k, vector<vector<int>> d) {
-    int ans = 0;
-    for (auto it = d.begin(); it != d.end(); it++) {
-        if (k >= (*it)[0]) {
-            auto d2 = vector<vector<int>>(d.begin(), it);
-            d2.insert(d2.end(), it + 1, d.end());
-
-            int s = solution(k - (*it)[1], d2) + 1;
-            ans = s > ans ? s : ans;
+vector<int> solution(string s)
+{
+    vector<int> board(100001);
+    string temp;
+    for (int i = 0; i < s.size(); i++)
+    {
+        if (s[i] - '0' < 10 && s[i] - '0' >= 0)
+        {
+            temp += s[i];
+        }
+        else if (temp.size())
+        {
+            board[stoi(temp)]++;
+            temp.clear();
         }
     }
-    return ans;
-}
 
-int main()
-{
-    solution(80, { {80,20 }, { 50,40 }, { 30,10 } });
-    return 0;
+    vector<pair<int, int>> elements;
+    for (int i = 0; i < board.size(); i++)
+        if (board[i] != 0)
+            elements.push_back(make_pair(i, board[i]));
+
+    sort(elements.begin(), elements.end(), [](auto& lhs, auto& rhs)
+        {
+            return lhs.second > rhs.second;
+        });
+
+    vector<int> answer;
+    for (auto& p : elements)
+        answer.push_back(p.first);
+
+    return answer;
 }
