@@ -4,36 +4,22 @@
 
 using namespace std;
 
-vector<int> solution(string s)
+bool solution(vector<string> phone_book)
 {
-    vector<int> board(100001);
-    string temp;
-    for (int i = 0; i < s.size(); i++)
-    {
-        if (s[i] - '0' < 10 && s[i] - '0' >= 0)
+    sort(phone_book.begin(), phone_book.end(), [](string& lhs, string& rhs)
         {
-            temp += s[i];
-        }
-        else if (temp.size())
-        {
-            board[stoi(temp)]++;
-            temp.clear();
-        }
-    }
-
-    vector<pair<int, int>> elements;
-    for (int i = 0; i < board.size(); i++)
-        if (board[i] != 0)
-            elements.push_back(make_pair(i, board[i]));
-
-    sort(elements.begin(), elements.end(), [](auto& lhs, auto& rhs)
-        {
-            return lhs.second > rhs.second;
+            return lhs < rhs;
         });
 
-    vector<int> answer;
-    for (auto& p : elements)
-        answer.push_back(p.first);
+    for (int i = 0; i < phone_book.size() - 1; i++)
+    {
+        if (phone_book[i][0] != phone_book[i + 1][0])
+            continue;
 
-    return answer;
+        string temp = phone_book[i + 1].substr(0, phone_book[i].size());
+        if (phone_book[i] == temp)
+            return false;
+    }
+
+    return true;
 }
