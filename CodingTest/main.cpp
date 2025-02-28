@@ -1,24 +1,26 @@
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <algorithm>
 
 using namespace std;
 
-bool solution(vector<string> phone_book) 
+int solution(vector<int> priorities, int location)
 {
-    unordered_map<string, int> hash_map;
-    for (int i = 0; i < phone_book.size(); i++)
-        hash_map[phone_book[i]] = 1;
-
-    for (int i = 0; i < phone_book.size(); i++) {
-        string phone_number = "";
-        for (int j = 0; j < phone_book[i].size(); j++) 
+    int maxPriorityNumber = *max_element(priorities.begin(), priorities.end());
+    int indexCnt = 0;
+    while (true)
+    {
+        for (int i = 0; i < priorities.size(); i++)
         {
-            phone_number += phone_book[i][j];
-            if (hash_map[phone_number] && phone_number != phone_book[i])
-                return false;
+            if (maxPriorityNumber == priorities[i])
+            {
+                indexCnt++;
+                if (i == location)
+                    return indexCnt;
+
+                priorities[i] = 0;
+                maxPriorityNumber = *max_element(priorities.begin(), priorities.end());
+            }
         }
     }
-
-    return true;
 }
