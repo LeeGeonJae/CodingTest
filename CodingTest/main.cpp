@@ -1,16 +1,24 @@
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <stack>
 
 using namespace std;
 
-int solution(int k, int m, vector<int> score)
+int solution(int n, int m, vector<int> section)
 {
     int answer = 0;
-    sort(score.rbegin(), score.rend());
+    stack<int> st;
+    for (int i = 0; i < section.size(); i++)
+        st.push(section[section.size() - i - 1]);
 
-    for (int i = 1; i <= score.size() / m; i++)
-        answer += score[i * m - 1] * m;
+    while (!st.empty())
+    {
+        int rollerLength = st.top() + m;
+        while (!st.empty() && st.top() < rollerLength)
+            st.pop();
+
+        answer++;
+    }
 
     return answer;
 }
