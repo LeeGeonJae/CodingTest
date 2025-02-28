@@ -4,23 +4,13 @@
 
 using namespace std;
 
-int solution(vector<int> priorities, int location)
+int solution(int k, int m, vector<int> score)
 {
-    int maxPriorityNumber = *max_element(priorities.begin(), priorities.end());
-    int indexCnt = 0;
-    while (true)
-    {
-        for (int i = 0; i < priorities.size(); i++)
-        {
-            if (maxPriorityNumber == priorities[i])
-            {
-                indexCnt++;
-                if (i == location)
-                    return indexCnt;
+    int answer = 0;
+    sort(score.rbegin(), score.rend());
 
-                priorities[i] = 0;
-                maxPriorityNumber = *max_element(priorities.begin(), priorities.end());
-            }
-        }
-    }
+    for (int i = 1; i <= score.size() / m; i++)
+        answer += score[i * m - 1] * m;
+
+    return answer;
 }
