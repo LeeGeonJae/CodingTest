@@ -1,24 +1,21 @@
 #include <string>
 #include <vector>
-#include <stack>
 
 using namespace std;
 
-int solution(int n, int m, vector<int> section)
+int solution(int n)
 {
-    int answer = 0;
-    stack<int> st;
-    for (int i = 0; i < section.size(); i++)
-        st.push(section[section.size() - i - 1]);
-
-    while (!st.empty())
+    vector<int> board(n + 1);
+    vector<int> prime;
+    for (int i = 2; i <= n; i++)
     {
-        int rollerLength = st.top() + m;
-        while (!st.empty() && st.top() < rollerLength)
-            st.pop();
-
-        answer++;
+        if (!board[i])
+        {
+            prime.push_back(i);
+            for (int j = i; j <= n; j = j + i)
+                board[j]++;
+        }
     }
 
-    return answer;
+    return prime.size();
 }
