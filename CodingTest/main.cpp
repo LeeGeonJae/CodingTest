@@ -1,30 +1,38 @@
 #include <string>
 #include <vector>
-#include <unordered_set>
+#include <unordered_map>
+#include <algorithm>
 
 using namespace std;
 
-int solution(vector<int> topping)
+vector<int> solution(int N, vector<int> stages)
 {
-    unordered_set<int> lhsBoard;
-    unordered_set<int> rhsBoard;
-    vector<int> lhsCnt(topping.size());
-    vector<int> rhsCnt(topping.size());
+    unordered_map<int, int> stageMap;
 
-    for (int i = 0; i < topping.size(); i++)
+    for (int i = 0; i < stages.size(); i++)
     {
-        lhsBoard.insert(topping[i]);
-        lhsCnt[i] = lhsBoard.size();
-        rhsBoard.insert(topping[topping.size() - i - 1]);
-        rhsCnt[rhsCnt.size() - i - 1] = rhsBoard.size();
+        if (stages[i] <= N)
+            stageMap[stages[i]]++;
     }
 
-    int answer = 0;
-    for (int i = 0; i < lhsCnt.size(); i++)
+    int num = stages.size();
+    vector<pair<int, double>> rate;
+    for (int i = 1; i <= N; i++)
     {
-        if (lhsCnt[i] == rhsCnt[i + 1])
-            answer++;
+        rate.push_back(make_pair(i, stageMap[i] ? (num ? (double)stageMap[i] / num : 1) : 0));
+        num -= stageMap[i];
     }
+
+    sort(rate.begin(), rate.end(), [](auto& lhs, auto& rhs)
+        {
+            if (lhs.second == rhs.second)
+                return lhs.first < rhs.first;
+            return lhs.second > rhs.second;
+        });
+
+    vector<int> answer;
+    for (auto& r : rate)
+        answer.push_back(r.first);
 
     return answer;
 }
