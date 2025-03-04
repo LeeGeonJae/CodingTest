@@ -1,37 +1,19 @@
 #include <string>
-#include <vector>
-#include <stack>
+#include <cmath>
 
 using namespace std;
 
-void DFS(vector<bool>& visited, stack<int>& st, const vector<vector<int>>& computers)
+int solution(string word)
 {
-    for (int i = 0; i < computers[st.top()].size(); i++)
+    int answer = 0;
+    string alpha = "AEIOU";
+    int weight[] = { 781, 156, 31, 6, 1 }; // 5^4 + 5^3 + 5^2 + 5^1 + 5^0의 누적 값
+
+    for (int i = 0; i < word.size(); i++)
     {
-        if (!visited[i] && computers[st.top()][i])
-        {
-            visited[i] = true;
-            st.push(i);
-            DFS(visited, st, computers);
-            st.pop();
-        }
+        int index = alpha.find(word[i]);
+        answer += index * weight[i] + 1;
     }
-}
 
-int solution(int n, vector<vector<int>> computers)
-{
-    int network = 0;
-    vector<bool> visited(computers.size(), false);
-    stack<int> st;
-
-    for (int i = 0; i < visited.size(); i++)
-    {
-        if (visited[i])
-            continue;
-
-        network++;
-        st.push(i);
-        DFS(visited, st, computers);
-    }
-    return network;
+    return answer;
 }
