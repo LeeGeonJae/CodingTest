@@ -1,14 +1,37 @@
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <stack>
 
 using namespace std;
 
-int solution(vector<vector<int>> triangle)
+void DFS(vector<bool>& visited, stack<int>& st, const vector<vector<int>>& computers)
 {
-    for (int i = triangle.size() - 1; i > 0; i--)
-        for (int j = 0; j < triangle[i].size() - 1; j++)
-            triangle[i - 1][j] += max(triangle[i][j], triangle[i][j + 1]);
+    for (int i = 0; i < computers[st.top()].size(); i++)
+    {
+        if (!visited[i] && computers[st.top()][i])
+        {
+            visited[i] = true;
+            st.push(i);
+            DFS(visited, st, computers);
+            st.pop();
+        }
+    }
+}
 
-    return triangle[0][0];
+int solution(int n, vector<vector<int>> computers)
+{
+    int network = 0;
+    vector<bool> visited(computers.size(), false);
+    stack<int> st;
+
+    for (int i = 0; i < visited.size(); i++)
+    {
+        if (visited[i])
+            continue;
+
+        network++;
+        st.push(i);
+        DFS(visited, st, computers);
+    }
+    return network;
 }
