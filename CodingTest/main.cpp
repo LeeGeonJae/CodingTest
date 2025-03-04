@@ -1,18 +1,35 @@
 #include <string>
-#include <cmath>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
-int solution(string word)
+int solution(vector<string> babbling)
 {
     int answer = 0;
-    string alpha = "AEIOU";
-    int weight[] = { 781, 156, 31, 6, 1 }; // 5^4 + 5^3 + 5^2 + 5^1 + 5^0의 누적 값
+    vector<string> babyLanguage = { "aya", "ye", "woo", "ma" };
 
-    for (int i = 0; i < word.size(); i++)
+    for (auto& s : babbling)
     {
-        int index = alpha.find(word[i]);
-        answer += index * weight[i] + 1;
+        int sequence = -1;
+        while (!s.empty())
+        {
+            bool isFind = false;
+            for (int i = 0; i < babyLanguage.size(); i++)
+            {
+                auto pos = s.find(babyLanguage[i]);
+                if (pos == 0 && sequence != i)
+                {
+                    sequence = i;
+                    isFind = true;
+                    s.erase(pos, pos + babyLanguage[i].size());
+                    answer += s.empty() ? 1 : 0;
+                }
+            }
+
+            if (!isFind)
+                break;
+        }
     }
 
     return answer;
