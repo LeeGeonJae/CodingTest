@@ -1,36 +1,28 @@
 #include <string>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
-int solution(vector<string> babbling)
+string solution(int n, int t, int m, int p)
 {
-    int answer = 0;
-    vector<string> babyLanguage = { "aya", "ye", "woo", "ma" };
+    char code[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
-    for (auto& s : babbling)
+    string number = "0";
+    for (int i = 1; i < m * t; i++)
     {
-        int sequence = -1;
-        while (!s.empty())
+        int num = i;
+        string temp;
+        while (num > 0)
         {
-            bool isFind = false;
-            for (int i = 0; i < babyLanguage.size(); i++)
-            {
-                auto pos = s.find(babyLanguage[i]);
-                if (pos == 0 && sequence != i)
-                {
-                    sequence = i;
-                    isFind = true;
-                    s.erase(pos, pos + babyLanguage[i].size());
-                    answer += s.empty() ? 1 : 0;
-                }
-            }
-
-            if (!isFind)
-                break;
+            temp = code[num % n] + temp;
+            num = num / n;
         }
+        number += temp;
     }
+
+    string answer;
+    for (int i = 0; i < t; i++)
+        answer += number[i * m + p - 1];
 
     return answer;
 }
