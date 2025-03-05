@@ -1,27 +1,36 @@
 #include <string>
 #include <vector>
-#include <queue>
+#include <unordered_map>
 
 using namespace std;
 
-long long solution(int n, vector<int> works)
+vector<int> solution(string msg)
 {
-    priority_queue<int> pq(works.begin(), works.end());
-    for (int i = 0; i < n; i++)
+    unordered_map<string, int> dictionary;
+    for (int i = 0; i <= 'Z' - 'A'; i++)
     {
-        int n = pq.top();
-        if (n != 0)
-        {
-            pq.pop();
-            pq.push(--n);
-        }
+        string temp;
+        temp = 'A' + i;
+        dictionary[temp] = i + 1;
     }
 
-    long long answer = 0;
-    while (!pq.empty())
+    vector<int> answer;
+    for (int i = 0; i < msg.size();)
     {
-        answer += pq.top() * pq.top();
-        pq.pop();
+        string word;
+        int index = i;
+        while (true)
+        {
+            word += msg[index];
+            if (!dictionary[word])
+            {
+                answer.push_back(dictionary[word.substr(0, word.size() - 1)]);
+                dictionary[word] = dictionary.size();
+                i = index;
+                break;
+            }
+            index++;
+        }
     }
 
     return answer;
