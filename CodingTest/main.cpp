@@ -1,37 +1,31 @@
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <algorithm>
 
 using namespace std;
 
-vector<int> solution(string msg)
+vector<int> solution(vector<string> operations)
 {
-    unordered_map<string, int> dictionary;
-    for (int i = 0; i <= 'Z' - 'A'; i++)
+    vector<int> number;
+    for (string& s : operations)
     {
-        string temp;
-        temp = 'A' + i;
-        dictionary[temp] = i + 1;
-    }
-
-    vector<int> answer;
-    for (int i = 0; i < msg.size();)
-    {
-        string word;
-        int index = i;
-        while (true)
+        if (s[0] == 'I')
+            number.push_back(stoi(s.substr(2, s.size() - 2)));
+        else
         {
-            word += msg[index];
-            if (!dictionary[word])
-            {
-                answer.push_back(dictionary[word.substr(0, word.size() - 1)]);
-                dictionary[word] = dictionary.size();
-                i = index;
-                break;
-            }
-            index++;
+            if (number.empty())
+                continue;
+
+            int check = stoi(s.substr(2, s.size() - 2));
+            if (check == 1)
+                number.erase(max_element(number.begin(), number.end()));
+            else
+                number.erase(min_element(number.begin(), number.end()));
         }
     }
 
-    return answer;
+    if (number.empty())
+        return { 0, 0 };
+
+    return { *max_element(number.begin(), number.end()), *min_element(number.begin(), number.end()) };
 }
