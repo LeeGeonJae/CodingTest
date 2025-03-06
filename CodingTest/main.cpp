@@ -1,23 +1,17 @@
-#include <string>
+#include <iostream>
 #include <vector>
-#include <stack>
-
+#include <algorithm>
+#include <set>
 using namespace std;
 
-vector<int> solution(vector<int> prices)
+int solution(vector<vector<int> > land)
 {
-    vector<int> answer(prices.size());
-    stack<int> st;
-    for (int i = 0; i < prices.size(); i++)
+    for (int i = 1; i < land.size(); i++)
     {
-        answer[i] = prices.size() - 1 - i;
-        while (!st.empty() && prices[st.top()] > prices[i])
-        {
-            answer[st.top()] = i - st.top();
-            st.pop();
-        }
-        st.push(i);
+        land[i][0] += max(land[i - 1][1], max(land[i - 1][2], land[i - 1][3]));
+        land[i][1] += max(land[i - 1][0], max(land[i - 1][2], land[i - 1][3]));
+        land[i][2] += max(land[i - 1][0], max(land[i - 1][1], land[i - 1][3]));
+        land[i][3] += max(land[i - 1][0], max(land[i - 1][1], land[i - 1][2]));
     }
-
-    return answer;
+    return *max_element(land[land.size() - 1].begin(), land[land.size() - 1].end());
 }
