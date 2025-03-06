@@ -1,31 +1,22 @@
-#include <string>
 #include <vector>
-#include <algorithm>
+#include <stack>
 
 using namespace std;
 
-vector<int> solution(vector<string> operations)
+vector<int> solution(vector<int> numbers)
 {
-    vector<int> number;
-    for (string& s : operations)
+    vector<int> answer(numbers.size(), -1);
+    stack<int> st;
+    for (int i = 0; i < numbers.size(); i++)
     {
-        if (s[0] == 'I')
-            number.push_back(stoi(s.substr(2, s.size() - 2)));
-        else
+        while (!st.empty() && numbers[st.top()] < numbers[i])
         {
-            if (number.empty())
-                continue;
-
-            int check = stoi(s.substr(2, s.size() - 2));
-            if (check == 1)
-                number.erase(max_element(number.begin(), number.end()));
-            else
-                number.erase(min_element(number.begin(), number.end()));
+            answer[st.top()] = numbers[i];
+            st.pop();
         }
+
+        st.push(i);
     }
 
-    if (number.empty())
-        return { 0, 0 };
-
-    return { *max_element(number.begin(), number.end()), *min_element(number.begin(), number.end()) };
+    return answer;
 }
