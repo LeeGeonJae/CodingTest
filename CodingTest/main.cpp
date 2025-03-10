@@ -1,30 +1,21 @@
 #include <string>
 #include <vector>
+#include <stack>
 
 using namespace std;
 
-int solution(string skill, vector<string> skill_trees)
+int solution(vector<int> order)
 {
-    vector<int> skillCheck(26);
-    for (int i = 0; i < skill.size(); i++)
-        skillCheck[skill[i] - 'A'] = 1;
-
     int answer = 0;
-    for (string& s : skill_trees)
+    stack<int> st;
+    for (int i = 1; i <= order.size(); i++)
     {
-        int index = 0;
-        for (int j = 0; j < s.size(); j++)
+        st.push(i);
+        while (!st.empty() && st.top() == order[answer])
         {
-            if (skillCheck[s[j] - 'A'] && skill[index] != s[j])
-            {
-                answer--;
-                break;
-            }
-            else if (skillCheck[s[j] - 'A'])
-                index += index + 1 == skill.size() ? 0 : 1;
+            answer++;
+            st.pop();
         }
-        answer++;
     }
-
     return answer;
 }
