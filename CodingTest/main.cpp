@@ -1,37 +1,20 @@
 #include <string>
 #include <vector>
-#include <map>
+#include <stack>
 
 using namespace std;
 
-vector<int> solution(vector<int> fees, vector<string> records)
+int solution(string s)
 {
-    map<int, int> carInRecord;
-    map<int, int> carTimeMap;
-    for (string& s : records)
+    int answer = 0;
+    int same = 1;
+    char alpha = s[0];
+    for (int i = 1; i < s.size(); i++)
     {
-        int minute = stoi(s.substr(0, 2)) * 60 + stoi(s.substr(3, 2));
-        int carNumber = stoi(s.substr(6, 4));
-
-        if (s[11] == 'I')
-            carInRecord[carNumber] = minute;
-        else
-        {
-            carTimeMap[carNumber] += minute - carInRecord[carNumber];
-            carInRecord[carNumber] = -1;
-        }
+        same += alpha == s[i] ? 1 : -1;
+        answer += same == 0 ? 1 : i + 1 == s.size() ? 1 : 0;
+        alpha = same == 0 ? s[i + 1] : alpha;
     }
 
-    vector<int> answer;
-    for (auto& m : carInRecord)
-    {
-        if (m.second != -1)
-            carTimeMap[m.first] += 24 * 60 - 1 - m.second;
-
-        int time = carTimeMap[m.first] - fees[0];
-        int price = time < 0 ? fees[1] : fees[1] + (time / fees[2]) * fees[3] + (time % fees[2] ? fees[3] : 0);
-        answer.push_back(price);
-    }
-
-    return answer;
+    return s.size() == 1 ? 1 : answer;
 }
