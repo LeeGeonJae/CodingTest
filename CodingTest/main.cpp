@@ -1,23 +1,31 @@
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
-string solution(string s, string skip, int index)
+vector<int> solution(vector<string> keymap, vector<string> targets)
 {
-    bool skipBoard[26] = {};
-    for (int i = 0; i < skip.size(); i++)
-        skipBoard[skip[i] - 'a'] = true;
-
-    for (auto& c : s)
+    vector<int> answer;
+    for (int i = 0; i < targets.size(); i++)
     {
-        int cnt = index;
-        while (cnt > 0)
+        int num = 0;
+        for (int j = 0; j < targets[i].size(); j++)
         {
-            c++;
-            if (c > 'z') c = 'a';
-            if (!skipBoard[c - 'a']) cnt--;
+            int minNumber = 0;
+            for (int k = 0; k < keymap.size(); k++)
+            {
+                auto iter = find(keymap[k].begin(), keymap[k].end(), targets[i][j]);
+                if (iter != keymap[k].end())
+                    minNumber = minNumber ? min(minNumber, (int)(iter - keymap[k].begin()) + 1) : iter - keymap[k].begin() + 1;
+            }
+
+            num = minNumber ? num + minNumber : -1;
+            if (!minNumber)
+                break;
         }
+        answer.push_back(num);
     }
-    return s;
+
+    return answer;
 }
