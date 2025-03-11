@@ -1,25 +1,37 @@
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
 
-int solution(int m, int n, vector<vector<int>> puddles)
+vector<int> solution(vector<int> fees, vector<string> records)
 {
-    vector<vector<int>> map(m + 1, vector<int>(n + 1, 0));
-    for (auto& vec : puddles)
-        map[vec[0]][vec[1]] = -1;
-
-    map[1][1] = 1;
-    for (int i = 1; i <= m; i++)
+    map<int, int> carInRecord;
+    map<int, int> carTimeMap;
+    for (string& s : records)
     {
-        for (int j = 1; j <= n; j++)
+        int minute = stoi(s.substr(0, 2)) * 60 + stoi(s.substr(3, 2));
+        int carNumber = stoi(s.substr(6, 4));
+
+        if (s[11] == 'I')
+            carInRecord[carNumber] = minute;
+        else
         {
-            if (map[i][j] == -1)
-                map[i][j] = 0;
-            else
-                map[i][j] += (map[i - 1][j] + map[i][j - 1]) % 1000000007;
+            carTimeMap[carNumber] += minute - carInRecord[carNumber];
+            carInRecord[carNumber] = -1;
         }
     }
 
-    return map[m][n];
+    vector<int> answer;
+    for (auto& m : carInRecord)
+    {
+        if (m.second != -1)
+            carTimeMap[m.first] += 24 * 60 - 1 - m.second;
+
+        int time = carTimeMap[m.first] - fees[0];
+        int price = time < 0 ? fees[1] : fees[1] + (time / fees[2]) * fees[3] + (time % fees[2] ? fees[3] : 0);
+        answer.push_back(price);
+    }
+
+    return answer;
 }
