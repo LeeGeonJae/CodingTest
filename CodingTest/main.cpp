@@ -1,20 +1,23 @@
 #include <string>
 #include <vector>
-#include <stack>
 
 using namespace std;
 
-int solution(string s)
+string solution(string s, string skip, int index)
 {
-    int answer = 0;
-    int same = 1;
-    char alpha = s[0];
-    for (int i = 1; i < s.size(); i++)
-    {
-        same += alpha == s[i] ? 1 : -1;
-        answer += same == 0 ? 1 : i + 1 == s.size() ? 1 : 0;
-        alpha = same == 0 ? s[i + 1] : alpha;
-    }
+    bool skipBoard[26] = {};
+    for (int i = 0; i < skip.size(); i++)
+        skipBoard[skip[i] - 'a'] = true;
 
-    return s.size() == 1 ? 1 : answer;
+    for (auto& c : s)
+    {
+        int cnt = index;
+        while (cnt > 0)
+        {
+            c++;
+            if (c > 'z') c = 'a';
+            if (!skipBoard[c - 'a']) cnt--;
+        }
+    }
+    return s;
 }
