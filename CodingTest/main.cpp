@@ -1,21 +1,25 @@
 #include <string>
 #include <vector>
-#include <stack>
 
 using namespace std;
 
-int solution(vector<int> order)
+int solution(int m, int n, vector<vector<int>> puddles)
 {
-    int answer = 0;
-    stack<int> st;
-    for (int i = 1; i <= order.size(); i++)
+    vector<vector<int>> map(m + 1, vector<int>(n + 1, 0));
+    for (auto& vec : puddles)
+        map[vec[0]][vec[1]] = -1;
+
+    map[1][1] = 1;
+    for (int i = 1; i <= m; i++)
     {
-        st.push(i);
-        while (!st.empty() && st.top() == order[answer])
+        for (int j = 1; j <= n; j++)
         {
-            answer++;
-            st.pop();
+            if (map[i][j] == -1)
+                map[i][j] = 0;
+            else
+                map[i][j] += (map[i - 1][j] + map[i][j - 1]) % 1000000007;
         }
     }
-    return answer;
+
+    return map[m][n];
 }
