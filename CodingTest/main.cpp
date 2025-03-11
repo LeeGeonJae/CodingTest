@@ -1,30 +1,42 @@
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <queue>
 
 using namespace std;
 
-vector<int> solution(vector<string> keymap, vector<string> targets)
+int solution(int x, int y, int n)
 {
-    vector<int> answer;
-    for (int i = 0; i < targets.size(); i++)
+    int answer = -1;
+    queue<pair<int, int>> q;
+    vector<bool> checkBoard(1000001);
+    q.push(make_pair(0, x));
+    while (!q.empty())
     {
-        int num = 0;
-        for (int j = 0; j < targets[i].size(); j++)
+        int number = q.front().second;
+        int cnt = q.front().first;
+        if (number * 2 <= y && !checkBoard[number * 2])
         {
-            int minNumber = 0;
-            for (int k = 0; k < keymap.size(); k++)
-            {
-                auto iter = find(keymap[k].begin(), keymap[k].end(), targets[i][j]);
-                if (iter != keymap[k].end())
-                    minNumber = minNumber ? min(minNumber, (int)(iter - keymap[k].begin()) + 1) : iter - keymap[k].begin() + 1;
-            }
-
-            num = minNumber ? num + minNumber : -1;
-            if (!minNumber)
-                break;
+            q.push(make_pair(cnt + 1, number * 2));
+            checkBoard[number * 2] = true;
         }
-        answer.push_back(num);
+        if (number * 3 <= y && !checkBoard[number * 3])
+        {
+            q.push(make_pair(cnt + 1, number * 3));
+            checkBoard[number * 3] = true;
+        }
+        if (number + n <= y && !checkBoard[number + n])
+        {
+            q.push(make_pair(cnt + 1, number + n));
+            checkBoard[number + n] = true;
+        }
+
+        if (q.front().second == y)
+        {
+            answer = cnt;
+            break;
+        }
+
+        q.pop();
     }
 
     return answer;
