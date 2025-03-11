@@ -1,18 +1,21 @@
 #include <string>
 #include <vector>
+#include <set>
 
 using namespace std;
 
-vector<int> solution(int n, int s)
+int solution(vector<int> A, vector<int> B)
 {
-    if (s < n)
-        return { -1 };
-
-    vector<int> answer(n);
-    for (int i = 0; i < n; i++)
+    int answer = 0;
+    multiset<int> BTeam(B.begin(), B.end());
+    for (int a : A)
     {
-        answer[i] = s / (n - i);
-        s = s - (s / (n - i));
+        auto iter = BTeam.upper_bound(a);
+        if (iter != BTeam.end())
+        {
+            BTeam.erase(iter);
+            answer++;
+        }
     }
 
     return answer;
