@@ -1,34 +1,45 @@
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <unordered_map>
-#include <sstream>
 
 using namespace std;
 
-vector<string> solution(vector<string> record)
+pair<string, int> extract(string& s)
 {
-    vector<string> mecro = { "´ÔÀÌ µé¾î¿Ô½À´Ï´Ù.", "´ÔÀÌ ³ª°¬½À´Ï´Ù." };
-    unordered_map<string, string> userMap;
-    vector<pair<string, string>> inputWords;
-    for (string& s : record)
+    string head;
+    int number;
+    for (int i = 0; i < s.size(); i++)
     {
-        stringstream ss(s);
-        string input, user, nickName;
-        ss >> input >> user >> nickName;
-
-        inputWords.push_back(make_pair(input, user));
-        if (input == "Enter" || input == "Change")
-            userMap[user] = nickName;
+        if (!isdigit(s[i]))
+            head += tolower(s[i]);
+        else
+        {
+            number = stoi(s.substr(i, 5));
+            break;
+        }
     }
 
-    vector<string> answer;
-    for (auto& it : inputWords)
-    {
-        if (it.first == "Enter")
-            answer.push_back(userMap[it.second] + mecro[0]);
-        if (it.first == "Leave")
-            answer.push_back(userMap[it.second] + mecro[1]);
-    }
+    return make_pair(head, number);
+}
 
-    return answer;
+vector<string> solution(vector<string> files)
+{
+    unordered_map<string, int> indexMap;
+    for (int i = 0; i < files.size(); i++)
+        indexMap[files[i]] = i;
+
+    sort(files.begin(), files.end(), [&](string& lhs, string& rhs)
+        {
+            auto lhsSort = extract(lhs);
+            auto rhsSort = extract(rhs);
+
+            if (lhsSort.first != rhsSort.first)
+                return lhsSort.first < rhsSort.first;
+            if (lhsSort.second != rhsSort.second)
+                return lhsSort.second < rhsSort.second;
+            return indexMap[lhs] < indexMap[rhs];
+        });
+
+    return files;
 }
