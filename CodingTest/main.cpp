@@ -1,22 +1,26 @@
 #include <string>
 #include <vector>
-#include <set>
+#include <algorithm>
+#include <unordered_map>
 
 using namespace std;
 
-int solution(vector<int> A, vector<int> B)
+string solution(vector<string> participant, vector<string> completion)
 {
-    int answer = 0;
-    multiset<int> BTeam(B.begin(), B.end());
-    for (int a : A)
-    {
-        auto iter = BTeam.upper_bound(a);
-        if (iter != BTeam.end())
-        {
-            BTeam.erase(iter);
-            answer++;
-        }
-    }
+    unordered_map<string, int> completionMap;
+    for (int i = 0; i < completion.size(); i++)
+        completionMap[completion[i]]++;
 
+    string answer;
+    for (string& s : participant)
+    {
+        if (!completionMap[s])
+        {
+            answer = s;
+            break;
+        }
+        else
+            completionMap[s]--;
+    }
     return answer;
 }
