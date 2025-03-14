@@ -1,74 +1,39 @@
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
-bool checkBlock(int y, int x, vector<string>& board)
+int solution(int n, vector<int> lost, vector<int> reserve)
 {
-    if (board[y][x] != ' '
-        && board[y][x] == board[y + 1][x]
-        && board[y][x] == board[y][x + 1]
-        && board[y][x] == board[y + 1][x + 1])
-        return true;
-    return false;
-}
-
-void blockFill(int y, int x, vector<string>& board)
-{
-    if (board[y][x] == ' ')
+    vector<int> board(n + 2);
+    sort(lost.begin(), lost.end());
+    n -= lost.size();
+    for (int i = 0; i < reserve.size(); i++)
     {
-        for (int i = y - 1; i >= 0; i--)
+        auto iter = find(lost.begin(), lost.end(), reserve[i]);
+        if (iter != lost.end())
         {
-            if (board[i][x] != ' ')
-            {
-                board[y][x] = board[i][x];
-                board[i][x] = ' ';
-                break;
-            }
+            *iter = -1;
+            n++;
         }
-    }
-}
-
-int solution(int m, int n, vector<string> board)
-{
-    int answer = 0;
-    bool isBlockCheck = true;
-    vector<vector<bool>> checkBoard(m, vector<bool>(n));
-    while (isBlockCheck)
-    {
-        isBlockCheck = false;
-        for (int i = 0; i < m - 1; i++)
-        {
-            for (int j = 0; j < n - 1; j++)
-            {
-                if (checkBlock(i, j, board))
-                {
-                    isBlockCheck = true;
-                    checkBoard[i][j] = true;
-                    checkBoard[i + 1][j] = true;
-                    checkBoard[i][j + 1] = true;
-                    checkBoard[i + 1][j + 1] = true;
-                }
-            }
-        }
-
-        for (int i = 0; i < m; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                if (checkBoard[i][j])
-                {
-                    answer++;
-                    board[i][j] = ' ';
-                    checkBoard[i][j] = false;
-                }
-            }
-        }
-
-        for (int i = 1; i <= m; i++)
-            for (int j = 0; j < n; j++)
-                blockFill(m - i, j, board);
+        else
+            board[reserve[i]] = 1;
     }
 
-    return answer;
+    for (int i = 0; i < lost.size(); i++)
+    {
+        if (lost[i] == -1)
+            continue;
+
+        n++;
+        if (board[lost[i] - 1])
+            board[lost[i] - 1] = 0;
+        else if (board[lost[i] + 1])
+            board[lost[i] + 1] = 0;
+        else
+            n--;
+    }
+
+    return n;
 }
