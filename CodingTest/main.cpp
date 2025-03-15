@@ -4,23 +4,22 @@
 
 using namespace std;
 
-int solution(vector<vector<int>> routes)
+string solution(string X, string Y)
 {
-    int point = -30001;
-    sort(routes.begin(), routes.end(), [](vector<int>& lhs, vector<int>& rhs)
-        {
-            return lhs[1] < rhs[1];
-        });
+    vector<int> number(10);
+    for (auto& c : X)
+        number[c - '0']++;
 
-    int answer = 0;
-    for (int i = 0; i < routes.size(); i++)
+    string answer = "";
+    for (int i = 0; i < Y.size(); i++)
     {
-        if (point < routes[i][0])
+        if (number[Y[i] - '0'])
         {
-            point = routes[i][1];
-            answer++;
+            answer += Y[i];
+            number[Y[i] - '0']--;
         }
     }
 
-    return answer;
+    sort(answer.rbegin(), answer.rend());
+    return answer.empty() ? "-1" : answer[0] == '0' ? "0" : answer;
 }
