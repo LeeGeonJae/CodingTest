@@ -4,36 +4,23 @@
 
 using namespace std;
 
-int solution(int n, vector<int> lost, vector<int> reserve)
+int solution(vector<vector<int>> routes)
 {
-    vector<int> board(n + 2);
-    sort(lost.begin(), lost.end());
-    n -= lost.size();
-    for (int i = 0; i < reserve.size(); i++)
-    {
-        auto iter = find(lost.begin(), lost.end(), reserve[i]);
-        if (iter != lost.end())
+    int point = -30001;
+    sort(routes.begin(), routes.end(), [](vector<int>& lhs, vector<int>& rhs)
         {
-            *iter = -1;
-            n++;
-        }
-        else
-            board[reserve[i]] = 1;
-    }
+            return lhs[1] < rhs[1];
+        });
 
-    for (int i = 0; i < lost.size(); i++)
+    int answer = 0;
+    for (int i = 0; i < routes.size(); i++)
     {
-        if (lost[i] == -1)
-            continue;
-
-        n++;
-        if (board[lost[i] - 1])
-            board[lost[i] - 1] = 0;
-        else if (board[lost[i] + 1])
-            board[lost[i] + 1] = 0;
-        else
-            n--;
+        if (point < routes[i][0])
+        {
+            point = routes[i][1];
+            answer++;
+        }
     }
 
-    return n;
+    return answer;
 }
