@@ -1,21 +1,31 @@
-#include <iostream>
+#include <string>
 #include <vector>
+#include <algorithm>
+#include <stack>
 
 using namespace std;
 
-int solution(int n, vector<int> stations, int w)
+string solution(vector<int> numbers)
 {
-    int answer = 0;
-    int index = 0;
-    for (int& num : stations)
+    vector<string> numberString;
+    bool isZeroCheck = true;
+    for (int& num : numbers)
     {
-        int size = num - w - index - 1;
-        answer += (size + (w * 2)) / (w * 2 + 1);
-        index = num + w;
+        numberString.push_back(to_string(num));
+        isZeroCheck = num ? false : isZeroCheck;
     }
 
-    if (index < n)
-        answer += (n - index + (w * 2)) / (w * 2 + 1);
+    if (isZeroCheck)
+        return "0";
+
+    sort(numberString.begin(), numberString.end(), [](string& lhs, string& rhs)
+        {
+            return (lhs + rhs) > (rhs + lhs);
+        });
+
+    string answer;
+    for (string& s : numberString)
+        answer += s;
 
     return answer;
 }
