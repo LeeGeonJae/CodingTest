@@ -1,25 +1,21 @@
-#include <string>
+#include <iostream>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
-string solution(string X, string Y)
+int solution(int n, vector<int> stations, int w)
 {
-    vector<int> number(10);
-    for (auto& c : X)
-        number[c - '0']++;
-
-    string answer = "";
-    for (int i = 0; i < Y.size(); i++)
+    int answer = 0;
+    int index = 0;
+    for (int& num : stations)
     {
-        if (number[Y[i] - '0'])
-        {
-            answer += Y[i];
-            number[Y[i] - '0']--;
-        }
+        int size = num - w - index - 1;
+        answer += (size + (w * 2)) / (w * 2 + 1);
+        index = num + w;
     }
 
-    sort(answer.rbegin(), answer.rend());
-    return answer.empty() ? "-1" : answer[0] == '0' ? "0" : answer;
+    if (index < n)
+        answer += (n - index + (w * 2)) / (w * 2 + 1);
+
+    return answer;
 }
