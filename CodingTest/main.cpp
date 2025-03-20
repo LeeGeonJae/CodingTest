@@ -1,31 +1,48 @@
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <algorithm>
-#include <stack>
 
 using namespace std;
 
-string solution(vector<int> numbers)
+vector<int> solution(vector<string> genres, vector<int> plays)
 {
-    vector<string> numberString;
-    bool isZeroCheck = true;
-    for (int& num : numbers)
+    vector<int> answer;
+    unordered_map<string, int> genresPlay;
+    unordered_map<string, vector<int>> includedSong;
+    for (int i = 0; i < genres.size(); i++)
     {
-        numberString.push_back(to_string(num));
-        isZeroCheck = num ? false : isZeroCheck;
+        genresPlay[genres[i]] += plays[i];
+
+        auto& song = includedSong[genres[i]];
+        if (song.size() < 2)
+            song.push_back(i);
+        else
+        {
+            int n = plays[song[0]] < plays[song[1]] ? 0 : 1;
+            if (plays[song[n]] < plays[i])
+                song[n] = i;
+        }
     }
 
-    if (isZeroCheck)
-        return "0";
+    for (auto& s : includedSong)
+    {
+        answer.push_back(s.second[0]);
 
-    sort(numberString.begin(), numberString.end(), [](string& lhs, string& rhs)
+        if (s.second.size() > 1)
+            answer.push_back(s.second[1]);
+    }
+
+    sort(answer.begin(), answer.end(), [&](int& lhs, int& rhs)
         {
-            return (lhs + rhs) > (rhs + lhs);
+            if (genres[lhs] == genres[rhs])
+            {
+                if (plays[lhs] == plays[rhs])
+                    return lhs < rhs;
+                return plays[lhs] > plays[rhs];
+            }
+            return genresPlay[genres[lhs]] > genresPlay[genres[rhs]];
         });
-
-    string answer;
-    for (string& s : numberString)
-        answer += s;
 
     return answer;
 }
