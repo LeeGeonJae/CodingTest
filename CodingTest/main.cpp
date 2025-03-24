@@ -1,51 +1,33 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <algorithm>
 
 using namespace std;
 
-int solution(vector<int> queue1, vector<int> queue2)
+int solution(int bridge_length, int weight, vector<int> truck_weights)
 {
-    queue<int> q1;
-    queue<int> q2;
-    long long lhs = 0;
-    long long rhs = 0;
-    for (int& n : queue1)
+    queue<pair<int, int>> q;
+    int index = 0;
+    int currentWeight = 0;
+    int currentTime = 0;
+    do
     {
-        q1.push(n);
-        lhs += n;
-    }
-    for (int& n : queue2)
-    {
-        q2.push(n);
-        rhs += n;
-    }
-
-    if ((lhs + rhs) % 2)
-        return -1;
-
-    int answer = 0;
-    while (lhs != rhs)
-    {
-        if (lhs < rhs)
+        if (currentTime - q.front().first == bridge_length)
         {
-            q1.push(q2.front());
-            lhs += q2.front();
-            rhs -= q2.front();
-            q2.pop();
+            currentWeight -= q.front().second;
+            q.pop();
         }
-        else if (rhs < lhs)
+
+        if (index != truck_weights.size() && truck_weights[index] + currentWeight <= weight)
         {
-            q2.push(q1.front());
-            rhs += q1.front();
-            lhs -= q1.front();
-            q1.pop();
+            q.push(make_pair(currentTime, truck_weights[index]));
+            currentWeight += truck_weights[index];
+            index++;
         }
-        answer++;
 
-        if (answer > (queue1.size() + queue2.size()) * 2)
-            return -1;
-    }
+        currentTime++;
+    } while (!q.empty());
 
-    return answer;
+    return currentTime;
 }
