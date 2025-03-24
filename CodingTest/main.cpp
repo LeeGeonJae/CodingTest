@@ -1,48 +1,54 @@
 #include <string>
 #include <vector>
-#include <unordered_map>
-#include <algorithm>
+#include <math.h>
+#include <set>
 
 using namespace std;
 
-vector<int> solution(vector<string> genres, vector<int> plays)
+const int NN = 10000000;
+
+void checkFuntion(set<int>& prime, vector<int>& basket, vector<bool>& checkBoard, const string& numbers, vector<bool>& primeNumber)
 {
-    vector<int> answer;
-    unordered_map<string, int> genresPlay;
-    unordered_map<string, vector<int>> includedSong;
-    for (int i = 0; i < genres.size(); i++)
+    if (!basket.empty())
     {
-        genresPlay[genres[i]] += plays[i];
+        int number = 0;
+        for (int i = 0; i < basket.size(); i++)
+            number += basket[i] * (pow(10, basket.size() - i - 1));
 
-        auto& song = includedSong[genres[i]];
-        if (song.size() < 2)
-            song.push_back(i);
-        else
-        {
-            int n = plays[song[0]] < plays[song[1]] ? 0 : 1;
-            if (plays[song[n]] < plays[i])
-                song[n] = i;
-        }
+        if (!primeNumber[number])
+            prime.insert(number);
     }
 
-    for (auto& s : includedSong)
+    for (int i = 0; i < numbers.size(); i++)
     {
-        answer.push_back(s.second[0]);
+        if (checkBoard[i])
+            continue;
 
-        if (s.second.size() > 1)
-            answer.push_back(s.second[1]);
+        basket.push_back(numbers[i] - '0');
+        checkBoard[i] = true;
+        checkFuntion(prime, basket, checkBoard, numbers, primeNumber);
+        basket.pop_back();
+        checkBoard[i] = false;
+    }
+}
+
+int solution(string numbers)
+{
+    vector<bool> primeNumber(NN + 1);
+    primeNumber[0] = true; primeNumber[1] = true;
+    for (int i = 2; i < sqrt(NN); i++)
+    {
+        if (primeNumber[i])
+            continue;
+
+        for (int j = i * 2; j <= NN; j += i)
+            primeNumber[j] = true;
     }
 
-    sort(answer.begin(), answer.end(), [&](int& lhs, int& rhs)
-        {
-            if (genres[lhs] == genres[rhs])
-            {
-                if (plays[lhs] == plays[rhs])
-                    return lhs < rhs;
-                return plays[lhs] > plays[rhs];
-            }
-            return genresPlay[genres[lhs]] > genresPlay[genres[rhs]];
-        });
+    set<int> prime;
+    vector<int> basket;
+    vector<bool> checkBoard(numbers.size());
+    checkFuntion(prime, basket, checkBoard, numbers, primeNumber);
 
-    return answer;
+    return prime.empty() ? 0 : prime.size();
 }
