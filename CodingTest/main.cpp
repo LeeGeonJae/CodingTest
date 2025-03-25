@@ -1,56 +1,34 @@
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
-enum
+vector<int> solution(vector<int> sequence, int k)
 {
-    Down = 0,
-    Right,
-    Up,
-    End
-};
-
-vector<int> solution(int n)
-{
-    vector<vector<int>> triangle(n);
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < i + 1; j++)
-            triangle[i].push_back(0);
-
-    int index = 0;
-    int number = 0;
-    int y = 0; int x = 0;
-    int direction = Down;
-    while (n)
+    pair<int, int> answer = make_pair(0, 10000001);
+    int left = 0;
+    int right = -1;
+    int sum = 0;
+    while (right != sequence.size())
     {
-        index++; number++;
-        triangle[y][x] = number;
-
-        // 방향 전환
-        if (index == n)
+        if (sum == k)
         {
-            n--;
-            index = 0;
-            direction = (direction + 1) % End;
+            answer = (answer.second - answer.first) > (right - left) ? make_pair(left, right) : answer;
+            sum -= sequence[left];
+            left++;
         }
-
-        // 좌표 변환
-        if (direction == Down)
-            y++;
-        else if (direction == Right)
-            x++;
-        else
+        else if (sum < k)
         {
-            y--;
-            x--;
+            right++;
+            sum += sequence[right];
+        }
+        else if (sum > k)
+        {
+            sum -= sequence[left];
+            left++;
         }
     }
 
-    vector<int> answer;
-    for (int i = 0; i < triangle.size(); i++)
-        for (int j = 0; j < triangle[i].size(); j++)
-            answer.push_back(triangle[i][j]);
-
-    return answer;
+    return { answer.first, answer.second };
 }
