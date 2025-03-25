@@ -4,31 +4,37 @@
 
 using namespace std;
 
-vector<int> solution(vector<int> sequence, int k)
+enum
 {
-    pair<int, int> answer = make_pair(0, 10000001);
-    int left = 0;
-    int right = -1;
-    int sum = 0;
-    while (right != sequence.size())
+    R = 'R' - 'A',
+    T = 'T' - 'A',
+    C = 'C' - 'A',
+    F = 'F' - 'A',
+    J = 'J' - 'A',
+    M = 'M' - 'A',
+    A = 'A' - 'A',
+    N = 'N' - 'A',
+};
+
+string solution(vector<string> survey, vector<int> choices)
+{
+    int table[26]{};
+    for (int i = 0; i < survey.size(); i++)
     {
-        if (sum == k)
-        {
-            answer = (answer.second - answer.first) > (right - left) ? make_pair(left, right) : answer;
-            sum -= sequence[left];
-            left++;
-        }
-        else if (sum < k)
-        {
-            right++;
-            sum += sequence[right];
-        }
-        else if (sum > k)
-        {
-            sum -= sequence[left];
-            left++;
-        }
+        if (choices[i] == 4)
+            continue;
+
+        if (choices[i] < 4)
+            table[survey[i][0] - 'A'] += (4 - choices[i]);
+        else
+            table[survey[i][1] - 'A'] += (choices[i] - 4);
     }
 
-    return { answer.first, answer.second };
+    string answer = "";
+    table[R] >= table[T] ? answer.push_back('R') : answer.push_back('T');
+    table[C] >= table[F] ? answer.push_back('C') : answer.push_back('F');
+    table[J] >= table[M] ? answer.push_back('J') : answer.push_back('M');
+    table[A] >= table[N] ? answer.push_back('A') : answer.push_back('N');
+
+    return answer;
 }
