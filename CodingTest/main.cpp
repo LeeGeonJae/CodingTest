@@ -1,33 +1,56 @@
 #include <string>
 #include <vector>
-#include <queue>
-#include <algorithm>
 
 using namespace std;
 
-int solution(int bridge_length, int weight, vector<int> truck_weights)
+enum
 {
-    queue<pair<int, int>> q;
+    Down = 0,
+    Right,
+    Up,
+    End
+};
+
+vector<int> solution(int n)
+{
+    vector<vector<int>> triangle(n);
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < i + 1; j++)
+            triangle[i].push_back(0);
+
     int index = 0;
-    int currentWeight = 0;
-    int currentTime = 0;
-    do
+    int number = 0;
+    int y = 0; int x = 0;
+    int direction = Down;
+    while (n)
     {
-        if (currentTime - q.front().first == bridge_length)
+        index++; number++;
+        triangle[y][x] = number;
+
+        // 방향 전환
+        if (index == n)
         {
-            currentWeight -= q.front().second;
-            q.pop();
+            n--;
+            index = 0;
+            direction = (direction + 1) % End;
         }
 
-        if (index != truck_weights.size() && truck_weights[index] + currentWeight <= weight)
+        // 좌표 변환
+        if (direction == Down)
+            y++;
+        else if (direction == Right)
+            x++;
+        else
         {
-            q.push(make_pair(currentTime, truck_weights[index]));
-            currentWeight += truck_weights[index];
-            index++;
+            y--;
+            x--;
         }
+    }
 
-        currentTime++;
-    } while (!q.empty());
+    vector<int> answer;
+    for (int i = 0; i < triangle.size(); i++)
+        for (int j = 0; j < triangle[i].size(); j++)
+            answer.push_back(triangle[i][j]);
 
-    return currentTime;
+    return answer;
 }
