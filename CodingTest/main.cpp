@@ -1,40 +1,23 @@
 #include <string>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
-enum
+int solution(int storey)
 {
-    R = 'R' - 'A',
-    T = 'T' - 'A',
-    C = 'C' - 'A',
-    F = 'F' - 'A',
-    J = 'J' - 'A',
-    M = 'M' - 'A',
-    A = 'A' - 'A',
-    N = 'N' - 'A',
-};
-
-string solution(vector<string> survey, vector<int> choices)
-{
-    int table[26]{};
-    for (int i = 0; i < survey.size(); i++)
+    int answer = 0;
+    while (storey)
     {
-        if (choices[i] == 4)
-            continue;
-
-        if (choices[i] < 4)
-            table[survey[i][0] - 'A'] += (4 - choices[i]);
+        int num = storey % 10;
+        storey /= 10;
+        if (num < 5 || (num == 5 && storey % 10 < 5))
+            answer += num;
         else
-            table[survey[i][1] - 'A'] += (choices[i] - 4);
+        {
+            storey++;
+            answer += (10 - num);
+        }
     }
-
-    string answer = "";
-    table[R] >= table[T] ? answer.push_back('R') : answer.push_back('T');
-    table[C] >= table[F] ? answer.push_back('C') : answer.push_back('F');
-    table[J] >= table[M] ? answer.push_back('J') : answer.push_back('M');
-    table[A] >= table[N] ? answer.push_back('A') : answer.push_back('N');
 
     return answer;
 }
