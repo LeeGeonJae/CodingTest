@@ -1,22 +1,28 @@
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <unordered_map>
 
 using namespace std;
 
-int solution(int storey)
+long long solution(vector<int> weights)
 {
-    int answer = 0;
-    while (storey)
+    sort(weights.begin(), weights.end());
+
+    unordered_map<int, int> weightBoard;
+    vector<int> checkWeight(1001);
+    long long answer = 0;
+    for (int i = 0; i < weights.size(); i++)
     {
-        int num = storey % 10;
-        storey /= 10;
-        if (num < 5 || (num == 5 && storey % 10 < 5))
-            answer += num;
-        else
-        {
-            storey++;
-            answer += (10 - num);
-        }
+        answer += weightBoard[weights[i] * 2];
+        answer += weightBoard[weights[i] * 3];
+        answer += weightBoard[weights[i] * 4];
+        answer -= checkWeight[weights[i]] * 2;
+
+        weightBoard[weights[i] * 2]++;
+        weightBoard[weights[i] * 3]++;
+        weightBoard[weights[i] * 4]++;
+        checkWeight[weights[i]]++;
     }
 
     return answer;
