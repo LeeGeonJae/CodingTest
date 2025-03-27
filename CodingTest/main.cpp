@@ -1,28 +1,31 @@
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <unordered_map>
+#include <queue>
 
 using namespace std;
 
-long long solution(vector<int> weights)
+int solution(vector<int> players, int m, int k)
 {
-    sort(weights.begin(), weights.end());
-
-    unordered_map<int, int> weightBoard;
-    vector<int> checkWeight(1001);
-    long long answer = 0;
-    for (int i = 0; i < weights.size(); i++)
+    int answer = 0;
+    queue<pair<int, int>> server;
+    int currentTime = 0;
+    int serverCnt = 0;
+    for (int& n : players)
     {
-        answer += weightBoard[weights[i] * 2];
-        answer += weightBoard[weights[i] * 3];
-        answer += weightBoard[weights[i] * 4];
-        answer -= checkWeight[weights[i]] * 2;
+        currentTime++;
+        if (!server.empty() && currentTime - server.front().first >= k)
+        {
+            serverCnt -= server.front().second;
+            server.pop();
+        }
 
-        weightBoard[weights[i] * 2]++;
-        weightBoard[weights[i] * 3]++;
-        weightBoard[weights[i] * 4]++;
-        checkWeight[weights[i]]++;
+        int serverAdd = n / m - serverCnt;
+        if (serverAdd > 0)
+        {
+            server.push(make_pair(currentTime, serverAdd));
+            serverCnt += serverAdd;
+            answer += serverAdd;
+        }
     }
 
     return answer;
