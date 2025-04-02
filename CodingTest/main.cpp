@@ -1,49 +1,33 @@
 #include <string>
 #include <vector>
-#include <unordered_map>
-#include <stack>
+#include <algorithm>
 
 using namespace std;
 
-void DFS(unordered_map<int, vector<int>>& conectedWire, int cut, int position, vector<bool>& checkBoard, stack<int>& st, int& number)
+int GCD(int a, int b)
 {
-    vector<int>& vec = conectedWire[position];
-    for (auto& n : vec)
+    while (b != 0)
     {
-        if (checkBoard[n] || cut == n)
-            continue;
-
-        number++;
-        checkBoard[n] = true;
-        st.push(n);
-        DFS(conectedWire, cut, st.top(), checkBoard, st, number);
-        st.pop();
+        int temp = b;
+        b = a % b;
+        a = temp;
     }
+    return a;
 }
 
-int solution(int n, vector<vector<int>> wires)
+int solution(vector<int> arrayA, vector<int> arrayB)
 {
-    unordered_map<int, vector<int>> conectedWire;
-    for (int i = 0; i < wires.size(); i++)
-    {
-        conectedWire[wires[i][0]].push_back(wires[i][1]);
-        conectedWire[wires[i][1]].push_back(wires[i][0]);
-    }
+    int numberA = arrayA[0];
+    for (int i = 1; i < arrayA.size(); i++)
+        numberA = GCD(max(arrayA[i], numberA), min(arrayA[i], numberA));
+    int numberB = arrayB[0];
+    for (int i = 1; i < arrayB.size(); i++)
+        numberB = GCD(max(arrayB[i], numberB), min(arrayB[i], numberB));
 
-    int answer = 100;
-    stack<int> st;
-    for (int i = 0; i < wires.size(); i++)
-    {
-        int lhs = 0;
-        int rhs = 0;
-        vector<bool> checkBoard(n + 1);
-        checkBoard[wires[i][0]] = true;
-        checkBoard[wires[i][1]] = true;
-        DFS(conectedWire, wires[i][1], wires[i][0], checkBoard, st, lhs);
-        DFS(conectedWire, wires[i][0], wires[i][1], checkBoard, st, rhs);
-        int gap = abs(lhs - rhs);
-        answer = answer > gap ? gap : answer;
-    }
+    for (int& n : arrayA)
+        numberB = numberB ? (n % numberB) == 0 ? 0 : numberB : 0;
+    for (int& n : arrayB)
+        numberA = numberA ? (n % numberA) == 0 ? 0 : numberA : 0;
 
-    return answer;
+    return max(numberA, numberB);
 }
