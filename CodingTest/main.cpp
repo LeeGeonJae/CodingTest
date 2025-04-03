@@ -1,33 +1,33 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <queue>
 
 using namespace std;
 
-int GCD(int a, int b)
+string settingRoom(const string& time, int settingTime)
 {
-    while (b != 0)
-    {
-        int temp = b;
-        b = a % b;
-        a = temp;
-    }
-    return a;
+    int minute = stoi(time.substr(3)) + settingTime;
+    int hour = stoi(time) + minute / 60;
+    minute = minute % 60;
+    return (hour >= 10 ? to_string(hour) : '0' + to_string(hour)) + ':' + (minute >= 10 ? to_string(minute) : '0' + to_string(minute));
 }
 
-int solution(vector<int> arrayA, vector<int> arrayB)
+int solution(vector<vector<string>> book_time)
 {
-    int numberA = arrayA[0];
-    for (int i = 1; i < arrayA.size(); i++)
-        numberA = GCD(max(arrayA[i], numberA), min(arrayA[i], numberA));
-    int numberB = arrayB[0];
-    for (int i = 1; i < arrayB.size(); i++)
-        numberB = GCD(max(arrayB[i], numberB), min(arrayB[i], numberB));
+    sort(book_time.begin(), book_time.end(), [](vector<string>& lhs, vector<string>& rhs)
+        {
+            return lhs[0] < rhs[0];
+        });
 
-    for (int& n : arrayA)
-        numberB = numberB ? (n % numberB) == 0 ? 0 : numberB : 0;
-    for (int& n : arrayB)
-        numberA = numberA ? (n % numberA) == 0 ? 0 : numberA : 0;
+    priority_queue<string, vector<string>, greater<string>> room;
+    for (const auto& booking : book_time)
+    {
+        if (!room.empty() && room.top() <= booking[0])
+            room.pop();
 
-    return max(numberA, numberB);
+        room.push(settingRoom(booking[1], 10));
+    }
+
+    return room.size();
 }
