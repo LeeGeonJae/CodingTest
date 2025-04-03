@@ -1,33 +1,18 @@
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <queue>
 
 using namespace std;
 
-string settingRoom(const string& time, int settingTime)
+string solution(int n)
 {
-    int minute = stoi(time.substr(3)) + settingTime;
-    int hour = stoi(time) + minute / 60;
-    minute = minute % 60;
-    return (hour >= 10 ? to_string(hour) : '0' + to_string(hour)) + ':' + (minute >= 10 ? to_string(minute) : '0' + to_string(minute));
-}
-
-int solution(vector<vector<string>> book_time)
-{
-    sort(book_time.begin(), book_time.end(), [](vector<string>& lhs, vector<string>& rhs)
-        {
-            return lhs[0] < rhs[0];
-        });
-
-    priority_queue<string, vector<string>, greater<string>> room;
-    for (const auto& booking : book_time)
+    string answer = "";
+    while (n)
     {
-        if (!room.empty() && room.top() <= booking[0])
-            room.pop();
-
-        room.push(settingRoom(booking[1], 10));
+        int number = n % 3;
+        answer = (number ? to_string(number) : to_string(4)) + answer;
+        n /= 3;
+        n -= number ? 0 : 1;
     }
 
-    return room.size();
+    return answer;
 }
