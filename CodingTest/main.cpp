@@ -5,6 +5,13 @@
 
 using namespace std;
 
+class Test
+{
+public:
+    Test();
+    ~Test();
+};
+
 vector<int> solution(vector<string> genres, vector<int> plays)
 {
     vector<int> answer;
@@ -24,25 +31,4 @@ vector<int> solution(vector<string> genres, vector<int> plays)
                 song[n] = i;
         }
     }
-
-    for (auto& s : includedSong)
-    {
-        answer.push_back(s.second[0]);
-
-        if (s.second.size() > 1)
-            answer.push_back(s.second[1]);
-    }
-
-    sort(answer.begin(), answer.end(), [&](int& lhs, int& rhs)
-        {
-            if (genres[lhs] == genres[rhs])
-            {
-                if (plays[lhs] == plays[rhs])
-                    return lhs < rhs;
-                return plays[lhs] > plays[rhs];
-            }
-            return genresPlay[genres[lhs]] > genresPlay[genres[rhs]];
-        });
-
-    return answer;
 }
