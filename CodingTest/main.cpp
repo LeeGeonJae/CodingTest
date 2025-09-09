@@ -3,23 +3,33 @@
 
 using namespace std;
 
-void DFS(vector<int>& numbers, int& target, int sum, int num, int& answer)
+void DFS(vector<vector<int>>& computers, vector<bool>& check, int num)
 {
-    if (num >= numbers.size())
+    for (int i = 0; i < computers[num].size(); i++)
     {
-        if (target == sum)
-            answer++;
-
-        return;
+        if (computers[num][i] == 1
+            && check[i] == false)
+        {
+            check[i] = true;
+            DFS(computers, check, i);
+        }
     }
-
-    DFS(numbers, target, sum + numbers[num], num + 1, answer);
-    DFS(numbers, target, sum - numbers[num], num + 1, answer);
 }
 
-int solution(vector<int> numbers, int target)
+int solution(int n, vector<vector<int>> computers)
 {
     int answer = 0;
-    DFS(numbers, target, 0, 0, answer);
+    vector<bool> check = vector<bool>(n, false);
+
+    for (int i = 0; i < computers.size(); i++)
+    {
+        if (check[i] == false)
+        {
+            answer++;
+            check[i] = true;
+            DFS(computers, check, i);
+        }
+    }
+
     return answer;
 }
