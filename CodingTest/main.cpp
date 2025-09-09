@@ -1,35 +1,54 @@
 #include <string>
 #include <vector>
+#include <queue>
+#include <unordered_map>
+#include <algorithm>
 
 using namespace std;
 
-void DFS(vector<vector<int>>& computers, vector<bool>& check, int num)
+bool checkWord(string& lhs, string& rhs, int num)
 {
-    for (int i = 0; i < computers[num].size(); i++)
+    int cnt = 0;
+    for (int i = 0; i < lhs.size(); i++)
     {
-        if (computers[num][i] == 1
-            && check[i] == false)
+        if (lhs[i] != rhs[i])
         {
-            check[i] = true;
-            DFS(computers, check, i);
+            cnt++;
+            if (cnt > num)
+                break;
         }
     }
+
+    return cnt == 1 ? true : false;
 }
 
-int solution(int n, vector<vector<int>> computers)
+int solution(string begin, string target, vector<string> words)
 {
-    int answer = 0;
-    vector<bool> check = vector<bool>(n, false);
+    if (find(words.begin(), words.end(), target) == words.end())
+        return 0;
 
-    for (int i = 0; i < computers.size(); i++)
+    unordered_map<string, int> board;
+    queue<string> q;
+    q.push(begin);
+
+    while (!q.empty())
     {
-        if (check[i] == false)
+        string currentWord = q.front();
+        q.pop();
+
+        if (currentWord == target)
+            return board[currentWord];
+
+        for (int i = 0; i < words.size(); i++)
         {
-            answer++;
-            check[i] = true;
-            DFS(computers, check, i);
+            if (checkWord(currentWord, words[i], 1)
+                && board[words[i]] == 0)
+            {
+                board[words[i]] = board[currentWord] + 1;
+                q.push(words[i]);
+            }
         }
     }
 
-    return answer;
+    return 0;
 }
