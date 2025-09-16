@@ -1,188 +1,109 @@
 #include <string>
 #include <vector>
-#include <stack>
+#include <unordered_map>
 #include <iostream>
 
 using namespace std;
 
-int dx[4] = { 1, -1, 0, 0 };
-int dy[4] = { 0, 0, 1, -1 };
+// 1. 물류 센터는 x, y 좌표가 있다
+// 2. 로봇마다 운송 경로가 m개의 포인트로 구성되고 첫 포인트부터 할당된 포인트를 순서대로 방문
+// 3. 모든 로봇(m개)은 0초에 동시에 출발하고 1초마다 r좌표와 c좌표 중 하나가 1만큼 이동
+// 4. 다음 포인트로 이동 시에 항상 최단 경로로 이동 경우가 여러 가지일 때, r좌표 먼저 이동
+// 5. 마지막 포인트에 도착한 로봇은 운송을 마치고 물류 센터를 벗어난다. 벗어나는 경로는 고려x
 
-struct Shape
+// 출력 : 같은 좌표에 2대 이상 모일 경우 answer++
+// 입력 : 운송 포인트 n개의 좌표를 담은 points
+// 입력 : x대의 운송 경로를 담은 routes
+
+// 로봇 시작 위치 : routes[0] 물류 위치
+// 로봇 목표 위치 : routes[1], routes[2] ... routes[m] 물류 위치
+
+// y 이동 -> x 이동
+
+class Robot
 {
-    vector<vector<int>> mat;
-    int size = 0;
+public:
+    Robot(vector<vector<int>>& points, vector<int> route)
+        : x(points[route[0] - 1][1])
+        , y(points[route[0] - 1][0])
+        , targetPosition(1)
+        , robotRoute(route)
+    {
+    }
+
+    void MoveRobot(vector<vector<int>>& points)
+    {
+        if (IsComplete())
+            return;
+
+        int targetX = points[robotRoute[targetPosition] - 1][1];
+        int targetY = points[robotRoute[targetPosition] - 1][0];
+
+        if (y != targetY)
+            y += targetY > y ? 1 : -1;
+        else if (x != targetX)
+            x += targetX > x ? 1 : -1;
+
+        if (x == targetX && y == targetY)
+            targetPosition++;
+    }
+
+    bool IsComplete()
+    {
+        if (targetPosition >= robotRoute.size())
+            return true;
+        return false;
+    }
+
+    string GetPosition()
+    {
+        string s = "y : " + to_string(y) + ", x : " + to_string(x);
+        return s;
+    }
+
+private:
+    int x;
+    int y;
+    int targetPosition;
+
+    vector<int> robotRoute;
 };
 
-void Rotated(Shape& shape)
+int solution(vector<vector<int>> points, vector<vector<int>> routes)
 {
-    int height = shape.mat.size();
-    int width = shape.mat[0].size();
-    vector<vector<int>> RotateMat = vector<vector<int>>(width, vector<int>(height, 0));
-    for (int i = 0; i < height; i++)
-        for (int j = 0; j < width; j++)
-            RotateMat[j][height - i - 1] = shape.mat[i][j];
-
-    shape.mat = RotateMat;
-}
-
-bool checkShape(Shape& lhs, Shape& rhs)
-{
-    if (lhs.size != rhs.size)
-        return false;
-
-    for (int i = 0; i < 4; i++)
+    vector<Robot> robots;
+    vector<int> startPointBoard = vector<int>(101, 0);
+    for (int i = 0; i < routes.size(); i++)
     {
-        bool isSame = true;
-        for (int j = 0; j < lhs.mat.size(); j++)
-        {
-            if (lhs.mat.size() != rhs.mat.size())
-            {
-                isSame = false;
-                break;
-            }
-
-            for (int k = 0; k < lhs.mat[j].size(); k++)
-            {
-                if (lhs.mat[j].size() != rhs.mat[j].size())
-                {
-                    isSame = false;
-                    break;
-                }
-
-                if (lhs.mat[j][k] != rhs.mat[j][k])
-                {
-                    isSame = false;
-                    break;
-                }
-            }
-
-            if (isSame == false)
-                break;
-        }
-
-        if (isSame)
-            return true;
-
-        Rotated(lhs);
+        startPointBoard[routes[i][0]]++;
+        Robot robot(points, routes[i]);
+        robots.push_back(robot);
     }
 
-    return false;
-}
-
-void updateShape(vector<pair<int, int>>& position, Shape& shape)
-{
-    int minX = 100;
-    int minY = 100;
-    int maxX = 0;
-    int maxY = 0;
-    for (int i = 0; i < position.size(); i++)
-    {
-        int x = position[i].first;
-        int y = position[i].second;
-
-        minX = min(x, minX);
-        minY = min(y, minY);
-        maxX = max(x, maxX);
-        maxY = max(y, maxY);
-    }
-
-    int shapeWidth = maxX - minX + 1;
-    int shapeHeight = maxY - minY + 1;
-    vector<vector<int>> shapeMat = vector<vector<int>>(shapeHeight, vector<int>(shapeWidth, 0));
-
-    for (int i = 0; i < position.size(); i++)
-        shapeMat[position[i].second - minY][position[i].first - minX] = 1;
-
-    shape.size = position.size();
-    shape.mat = shapeMat;
-}
-
-Shape DFS(vector<vector<int>>& board, vector<vector<bool>>& visited, int posY, int posX, bool isBoard)
-{
-    stack<pair<int, int>> st;
-    st.push(make_pair(posX, posY));
-
-    vector<pair<int, int>> position;
-    while (!st.empty())
-    {
-        int x = st.top().first;
-        int y = st.top().second;
-        position.push_back(make_pair(x, y));
-        st.pop();
-
-        for (int i = 0; i < 4; i++)
-        {
-            int nextX = x + dx[i];
-            int nextY = y + dy[i];
-
-            if (nextX < 0 || nextY < 0 || nextX >= board[0].size() || nextY >= board.size())
-                continue;
-
-            if (visited[nextY][nextX] == true || board[nextY][nextX] == isBoard)
-                continue;
-
-            visited[nextY][nextX] = true;
-            st.push(make_pair(nextX, nextY));
-        }
-    }
-
-    Shape shape;
-    updateShape(position, shape);
-
-    return shape;
-}
-
-int solution(vector<vector<int>> game_board, vector<vector<int>> table)
-{
-    vector<vector<bool>> visited_Board = vector<vector<bool>>(game_board.size(), vector<bool>(game_board[0].size(), false));
-    vector<vector<bool>> visited_Table = vector<vector<bool>>(table.size(), vector<bool>(table[0].size(), false));
-    vector<Shape> boardShapes;
-    vector<Shape> tableShapes;
-
-    for (int i = 0; i < game_board.size(); i++)
-    {
-        for (int j = 0; j < game_board[i].size(); j++)
-        {
-            if (game_board[i][j] == 0 && visited_Board[i][j] == false)
-            {
-                visited_Board[i][j] = true;
-
-                Shape shape = DFS(game_board, visited_Board, i, j, true);
-                boardShapes.push_back(shape);
-            }
-        }
-    }
-
-
-    for (int i = 0; i < table.size(); i++)
-    {
-        for (int j = 0; j < table[i].size(); j++)
-        {
-            if (table[i][j] == 1 && visited_Table[i][j] == false)
-            {
-                visited_Table[i][j] = true;
-
-                Shape shape = DFS(table, visited_Table, i, j, false);
-                tableShapes.push_back(shape);
-            }
-        }
-    }
-
+    // 첫 위치 충돌 체크
     int answer = 0;
-    vector<bool> fillBlock = vector<bool>(boardShapes.size(), false);
-    for (int i = 0; i < tableShapes.size(); i++)
+    for (auto& point : startPointBoard)
+        if (point > 1)
+            answer++;
+
+    bool isComplete = false;
+    while (!isComplete)
     {
-        for (int j = 0; j < boardShapes.size(); j++)
+        isComplete = true;
+        unordered_map<string, int> robotBoard;
+        for (auto& robot : robots)
         {
-            if (checkShape(tableShapes[i], boardShapes[j])
-                && fillBlock[j] == false)
+            if (robot.IsComplete() == false)
             {
-                fillBlock[j] = true;
-                answer += tableShapes[i].size;
-                break;
+                robot.MoveRobot(points);
+                isComplete = false;
+                robotBoard[robot.GetPosition()]++;
             }
         }
+
+        for (auto pos : robotBoard)
+            if (pos.second > 1)
+                answer++;
     }
 
     return answer;
